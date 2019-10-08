@@ -1,4 +1,4 @@
-module.exports = {
-    secret: 'alex-desafio-2',
+export default {
+    secret: process.env.APP_SECRET,
     expiresIn: '1d'
 };
