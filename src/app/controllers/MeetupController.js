@@ -9,7 +9,7 @@ import File from '../models/File';
 class MeetupController {
     async index(req, res) {
         const page = req.query.page || 1;
-        const date = (req.query.date) ? parseISO(req.query.date) : new Date();
+        const date = req.query.date ? parseISO(req.query.date) : new Date();
         const limit = 10;
 
         const meetups = await Meetup.findAll({
@@ -53,12 +53,50 @@ class MeetupController {
         }
 
         if (isBefore(parseISO(req.body.date), new Date())) {
-            return res.status(400).json({ error: 'Past dates are not permitted' });
+            return res.status(400).json({ error: 'Invalid meetup date' });
         }
 
         const meetup = await Meetup.create({ ...req.body, user_id: req.userId });
 
         return res.json(meetup);
+    }
+
+    async update(req, res) {
+        const schema = Yup.object().shape({
+            title: Yup.string(),
+            description: Yup.string(),
+            date: Yup.date(),
+            location: Yup.string(),
+            file_id: Yup.number()
+        });
+
+        if (!(await schema.isValid(req.body))) {
+            return res.status(400).json({ error: 'Validation fails' });
+        }
+
+        const meetup = await Meetup.findByPk(req.params.id);
+
+        if (meetup.user_id !== req.userId) {
+            return res.status(401).json({ error: 'Not authorized to update this meetup' });
+        }
+
+        if (isBefore(parseISO(req.body.date), new Date())) {
+            return res.status(400).json({ error: 'Invalid meetup date' });
+        }
+
+        if (meetup.isPast) {
+            return res.status(400).json({ error: 'Can not update past meetups' });
+        }
+
+        const { id, title, description, date, location } = await meetup.update(req.body);
+
+        return res.json({
+            id,
+            title,
+            description,
+            date,
+            location
+        });
     }
 }
 
