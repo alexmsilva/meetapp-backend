@@ -98,6 +98,22 @@ class MeetupController {
             location
         });
     }
+
+    async delete(req, res) {
+        const meetup = await Meetup.findByPk(req.params.id);
+
+        if (meetup.user_id !== req.userId) {
+            return res.status(401).json({ error: 'Not authorized to delete this meetup' });
+        }
+
+        if (meetup.isPast) {
+            return res.status(400).json({ error: 'Can not delete past meetups' });
+        }
+
+        await meetup.destroy();
+
+        return res.json();
+    }
 }
 
 export default new MeetupController();
