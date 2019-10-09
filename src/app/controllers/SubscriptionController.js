@@ -1,9 +1,45 @@
+import { Op } from 'sequelize';
+
 import Subscription from '../models/Subscription';
 import Meetup from '../models/Meetup';
+import File from '../models/File';
+import User from '../models/User';
 
 class SubscriptionController {
     async index(req, res) {
-        return res.json({ message: 'Working on...' });
+        const subscriptions = await Subscription.findAll({
+            where: {
+                user_id: req.userId
+            },
+            attributes: ['id'],
+            include: [
+                {
+                    model: Meetup,
+                    as: 'meetup',
+                    where: {
+                        date: {
+                            [Op.gt]: new Date()
+                        }
+                    },
+                    attributes: ['title', 'date', 'description', 'location'],
+                    include: [
+                        {
+                            model: File,
+                            as: 'banner',
+                            attributes: ['path', 'url']
+                        },
+                        {
+                            model: User,
+                            as: 'organizer',
+                            attributes: ['name', 'email']
+                        }
+                    ]
+                }
+            ],
+            order: [['meetup', 'date']]
+        });
+
+        return res.json(subscriptions);
     }
 
     async create(req, res) {
