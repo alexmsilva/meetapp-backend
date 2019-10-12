@@ -1,0 +1,12 @@
+<strong>Olá, {{ meetup.organizer.name }}</strong>
+<p>Uma pessoa acaba de se inscrever em um de seus meetups: Veja as informações da inscrição logo abaixo:</p>
+<p>
+    <strong>Meetup: </strong> {{ meetup.title }} <br />
+    <strong>Inscrito: </strong>
+        <ul style="list-style: none">
+            <li>Nome: {{ user.name }}</li>
+            <li>Email: {{ user.email }}</li>
+        </ul>
+    <strong>Location: </strong> {{ meetup.location }} <br />
+    <strong>Data/hora: </strong> {{ date }} <br />
+</p>

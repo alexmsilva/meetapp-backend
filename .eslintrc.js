@@ -18,7 +18,7 @@ module.exports = {
         'no-trailing-spaces': 'error',
         'eol-last': ['error', 'always'],
         'indent': ['error', 4],
-        'quotes': ['error', 'single'],
+        'quotes': ['error', 'single', { 'avoidEscape': true }],
         'semi': ['error', 'always'],
         'no-multiple-empty-lines': ['error', { 'max': 2, 'maxEOF': 1 }],
         'class-methods-use-this': 'off',
